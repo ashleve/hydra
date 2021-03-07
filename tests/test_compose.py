@@ -340,6 +340,11 @@ def test_adding_to_sc_dict(
     assert cfg == expected
 
 
+def test_hydra_node_validated(initialize_hydra_no_path: Any) -> None:
+    with raises(ConfigCompositionException):
+        compose(overrides=["hydra.foo=bar"])
+
+
 @mark.usefixtures("hydra_restore_singletons")
 @mark.usefixtures("initialize_hydra_no_path")
 class TestAdd:

@@ -242,12 +242,15 @@ class ConfigLoaderImpl(ConfigLoader):
         )
 
         # set struct mode on user config if the root node is not typed.
+        # The assumption is that once the root node is typed, the entire config is typed and struct mode
+        # is not needed.
+        # this enables cleaner behavior for fields annotated as Dict[K, V].
         if OmegaConf.get_type(cfg) is dict:
             OmegaConf.set_struct(cfg, True)
 
-        # Turn off struct mode on the Hydra node. It gets its type safety from it being a Structured Config.
-        # This enables adding fields to nested dicts like hydra.job.env_set without having to using + to append.
-        OmegaConf.set_struct(cfg.hydra, False)
+        OmegaConf.set_struct(cfg.hydra, True)
+        OmegaConf.set_struct(cfg.hydra.choices, False)
+        OmegaConf.set_struct(cfg.hydra.job.env_set, False)
 
         # Make the Hydra node writeable (The user may have made the primary node read-only).
         OmegaConf.set_readonly(cfg.hydra, False)
